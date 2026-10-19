@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Penny Budgeter</title>
+<meta name="theme-color" content="#17896a">
+<meta name="description" content="See your pay, bills, and leftover money at a glance.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Penny">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f8f5;--card:#fff;--ink:#12342f;--mute:#5d7a74;--line:#d3e4de;--pos:#17896a;--neg:#d8453d;--gold:#f2b134;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1f1b;--card:#15302a;--ink:#e6f4ef;--mute:#8fb0a8;--line:#28473f;--pos:#3ccfa1;--neg:#ff7b72;--gold:#f5c451;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1f1b;--card:#15302a;--ink:#e6f4ef;--mute:#8fb0a8;--line:#28473f;--pos:#3ccfa1;--neg:#ff7b72;--gold:#f5c451;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.45 Nunito,system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h2{font-size:1.15rem;font-weight:900;margin:0 0 10px}
+section{margin-top:28px;padding-top:22px;border-top:2px solid var(--line)}
+.hero{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.big{font-size:3.2rem;font-weight:900;line-height:1;letter-spacing:-.02em}
+.sub{color:var(--mute);font-size:.95rem}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+input{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:10px;padding:8px 10px;width:100%;min-width:0}
+input:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+label.f{display:block;font-weight:700;margin-bottom:12px}
+.row{display:grid;grid-template-columns:10px 1fr 84px 56px 36px;gap:6px;align-items:center;margin-bottom:8px}
+.row i{height:34px;border-radius:5px}
+.hd{display:grid;grid-template-columns:10px 1fr 84px 56px 36px;gap:6px;color:var(--mute);font-size:.8rem;font-weight:700;margin-bottom:4px}
+button{font:inherit;font-weight:700;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+button.pri{background:var(--pos);border-color:var(--pos);color:#fff}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bar{display:flex;height:56px;border-radius:14px;overflow:hidden;background:var(--line);position:relative}
+.bar div{height:100%;border-right:2px solid var(--bg)}
+.mark{position:absolute;top:-6px;bottom:-6px;width:3px;background:var(--ink)}
+svg.v{width:100%;height:auto;max-height:320px;display:block;margin:0 auto}
+.legend{margin-top:14px;display:grid;gap:4px}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend i{width:12px;height:12px;border-radius:4px;flex:none}
+.legend span:nth-child(3){margin-left:auto;font-weight:700}
+.legend span:nth-child(4){width:44px;text-align:right;color:var(--mute);font-size:.85rem}
+.daily{font-size:2.4rem;font-weight:900}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal b{text-align:center;color:var(--mute);font-size:.75rem}
+.day{min-height:54px;border:2px solid var(--line);border-radius:8px;padding:3px 4px;font-size:.72rem;background:var(--card);overflow:hidden}
+.day.t{border-color:var(--gold)}
+.day.has{background:color-mix(in srgb,var(--gold) 16%,var(--card))}
+.dots{display:flex;gap:2px;margin:2px 0}.dots i{width:8px;height:8px;border-radius:50%}
+.prog{height:18px;border-radius:9px;background:var(--line);overflow:hidden;margin:8px 0}
+.prog div{height:100%;background:var(--pos);border-radius:9px;transition:width .3s}
+.meter{height:14px;border-radius:7px;background:linear-gradient(90deg,#e0524a,#f2b134,#3ccfa1);position:relative;margin:10px 0 4px}
+.meter i{position:absolute;top:-4px;width:6px;height:22px;background:var(--ink);border-radius:3px;transition:left .3s}
+details{border:2px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:14px;background:var(--card)}summary{font-weight:700;cursor:pointer}details[open] summary{margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body><main>
+<div class="hero">
+  <div><div class="sub">Left over this month</div><div class="big" id="left"></div><div class="sub" id="lsub"></div></div>
+  <div id="face" style="width:112px;flex:none"></div>
+</div>
+<p id="say" style="font-weight:700;margin:12px 0 0"></p>
+<div class="meter" aria-hidden="true"><i id="pin"></i></div><div class="sub">Budget health: <span id="hp"></span></div>
+
+<section><h2>Your numbers</h2>
+<label class="f">Monthly pay (before taxes)<input id="pay" type="number" inputmode="decimal" min="0"></label>
+<details id="taxm"><summary>Taxes</summary><label class="f">Tax taken out of each check (%)<input id="tax" type="number" inputmode="decimal" min="0" max="60" step="0.1" placeholder="0"></label><div class="sub" id="txt"></div></details>
+<div class="hd"><span></span><span>Bill</span><span>Amount</span><span>Due day</span><span></span></div>
+<div id="bills"></div>
+<button id="add">Add bill</button></section>
+
+<section><h2>See the balance</h2>
+<div class="tabs" role="group" aria-label="Choose a view">
+<button data-v="bar">Bar</button><button data-v="donut">Donut</button><button data-v="scale">Scale</button><button data-v="jar">Jar</button></div>
+<div id="vis"></div><div class="legend" id="legend"></div></section>
+
+<section><h2>Daily spending allowance</h2>
+<div class="daily" id="daily"></div><div class="sub" id="dsub"></div></section>
+
+<section><h2>Bill calendar</h2><div class="sub" id="cmon" style="margin-bottom:8px"></div><div class="cal" id="cal"></div></section>
+
+<section><h2>Savings goal</h2>
+<div class="g2"><label class="f">Goal<input data-g="n" id="gn"></label><label class="f">Target $<input data-g="t" id="gt" type="number" inputmode="decimal" min="0"></label></div>
+<label class="f">Saved so far $<input data-g="s" id="gs" type="number" inputmode="decimal" min="0"></label>
+<div class="prog"><div id="gp"></div></div><div id="gtxt"></div>
+<button class="pri" id="sv" style="margin-top:10px">Add this month’s leftover to goal</button></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),C=['#2a9d8f','#e9c46a','#f4a261','#e76f51','#6c8ebf','#9b7ede','#d96c9e','#5fb760'];
+let S={pay:3200,bills:[{n:'Rent',a:1200,d:1},{n:'Car payment',a:350,d:8},{n:'Phone',a:80,d:15},{n:'Groceries',a:450,d:20},{n:'Internet',a:65,d:25}],goal:{n:'Emergency fund',t:1000,s:200},view:'bar'};
+try{const x=localStorage.getItem('penny');if(x)S=JSON.parse(x)}catch(e){}
+const f=v=>(v<0?'-':'')+'$'+Math.round(Math.abs(v)).toLocaleString(),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+S.gross??=S.pay;S.tax??=0;let T,L;
+function rows(){$('#bills').innerHTML=S.bills.map((b,i)=>`<div class="row"><i style="background:${C[i%8]}"></i><input data-i="${i}" data-k="n" value="${esc(b.n)}" aria-label="Bill name"><input data-i="${i}" data-k="a" type="number" inputmode="decimal" min="0" value="${b.a}" aria-label="Amount"><input data-i="${i}" data-k="d" type="number" inputmode="numeric" min="1" max="31" value="${b.d}" aria-label="Due day of month"><button data-del="${i}" aria-label="Remove ${esc(b.n)}">×</button></div>`).join('')}
+function vBar(){const m=Math.max(S.pay,T)||1;return `<div class="bar">${S.bills.map((b,i)=>`<div title="${esc(b.n)}" style="width:${b.a/m*100}%;background:${C[i%8]}"></div>`).join('')}${T>S.pay?`<span class="mark" style="left:${S.pay/m*100}%"></span>`:''}</div><div class="sub" style="margin-top:8px">${T>S.pay?'The line marks your pay. Bills run past it.':'The empty space is what you keep.'}</div>`}
+function vDonut(){const R=70,K=2*Math.PI*R,m=Math.max(S.pay,T)||1;let a=0,x=`<circle r="${R}" cx="100" cy="100" fill="none" stroke="var(--line)" stroke-width="28"/>`;S.bills.forEach((b,i)=>{const l=b.a/m*K;x+=`<circle r="${R}" cx="100" cy="100" fill="none" stroke="${C[i%8]}" stroke-width="28" stroke-dasharray="${l} ${K-l}" stroke-dashoffset="${-a}" transform="rotate(-90 100 100)"/>`;a+=l});
+return `<svg class="v" viewBox="0 0 200 200" role="img" aria-label="Donut chart of bills">${x}<text x="100" y="96" text-anchor="middle" font-size="12" fill="var(--mute)">${L<0?'Over by':'Left over'}</text><text x="100" y="118" text-anchor="middle" font-size="22" font-weight="900" fill="${L<0?'var(--neg)':'var(--ink)'}">${f(Math.abs(L))}</text></svg>`}
+function vScale(){const r=S.pay?(T-S.pay)/S.pay:0,a=cl(r*40,-18,18)*Math.PI/180,Ln=105,px=150,py=60,lx=px-Ln*Math.cos(a),ly=py-Ln*Math.sin(a),rx=px+Ln*Math.cos(a),ry=py+Ln*Math.sin(a);
+const pan=(x,y,l,c)=>`<path d="M${x} ${y}L${x-38} ${y+70}M${x} ${y}L${x+38} ${y+70}" stroke="var(--mute)" fill="none"/><path d="M${x-48} ${y+70}h96a48 22 0 0 1-96 0z" fill="${c}"/><text x="${x}" y="${y+112}" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="700">${l}</text>`;
+return `<svg class="v" viewBox="0 0 300 230" role="img" aria-label="Balance scale of pay against bills"><path d="M150 60V212M100 212h100" stroke="var(--mute)" stroke-width="6" stroke-linecap="round"/>${pan(lx,ly,'Pay '+f(S.pay),'var(--pos)')}${pan(rx,ry,'Bills '+f(T),T>S.pay?'var(--neg)':'#e9c46a')}<path d="M${lx} ${ly}L${rx} ${ry}" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/><circle cx="150" cy="60" r="8" fill="var(--gold)"/></svg>`}
+function vJar(){const H=190,y0=240;let c=0,x='';S.bills.forEach((b,i)=>{const h=S.pay?b.a/S.pay*H:0;x+=`<rect x="80" y="${y0-c-h}" width="140" height="${h}" fill="${C[i%8]}"/>`;c+=h});const p=S.pay?Math.round(T/S.pay*100):0;
+return `<svg class="v" viewBox="0 0 300 260" role="img" aria-label="Jar filled by bills"><defs><clipPath id="jc"><rect x="80" y="50" width="140" height="190" rx="22"/></clipPath></defs><rect x="80" y="50" width="140" height="190" rx="22" fill="var(--line)"/><g clip-path="url(#jc)">${x}</g><rect x="80" y="50" width="140" height="190" rx="22" fill="none" stroke="var(--ink)" stroke-width="4"/><rect x="90" y="34" width="120" height="14" rx="6" fill="var(--ink)"/>${T>S.pay?'<path d="M82 52q-16 14-8 46M218 52q16 14 8 46M150 30q0-14 0-14" stroke="var(--neg)" stroke-width="7" fill="none" stroke-linecap="round"/>':''}<text x="150" y="254" text-anchor="middle" font-size="14" font-weight="700" fill="${T>S.pay?'var(--neg)':'var(--ink)'}">${T>S.pay?'Overflowing: '+p+'% of pay':p+'% full'}</text></svg>`}
+function face(r){const m=r<=.7?0:r<=.85?1:r<=1?2:3,mouth=['M38 72Q60 94 82 72','M44 78H76','M40 84Q60 68 80 84','M38 88Q60 62 82 88'][m],say=['Penny is thrilled. You have room to breathe.','Penny is calm. Solid balance.','Penny is nervous. It’s tight this month.','Penny is stressed. Bills are bigger than pay.'][m];
+return [`<svg viewBox="0 0 120 120" role="img" aria-label="Penny the coin character"><circle cx="60" cy="60" r="54" fill="var(--gold)" stroke="#c98a14" stroke-width="5"/><circle cx="60" cy="60" r="42" fill="none" stroke="#c98a14" stroke-width="2" stroke-dasharray="3 5"/><circle cx="44" cy="52" r="${m==3?5:6}" fill="#12342f"/><circle cx="76" cy="52" r="${m==3?5:6}" fill="#12342f"/>${m>=2?`<path d="M34 40L52 44M86 40L68 44" stroke="#12342f" stroke-width="3" stroke-linecap="round"/>`:''}${m==3?'<path d="M96 30q-7 11 0 15q7-4 0-15z" fill="#6cb8ff"/>':''}<path d="${mouth}" stroke="#12342f" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,say]}
+function update(){S.pay=S.gross*(1-S.tax/100);T=S.bills.reduce((s,b)=>s+(+b.a||0),0);L=S.pay-T;const r=S.pay?T/S.pay:(T?2:0),hp=Math.round(cl((1.1-r)/.5,0,1)*100),now=new Date(),y=now.getFullYear(),mo=now.getMonth(),dim=new Date(y,mo+1,0).getDate(),left=dim-now.getDate()+1;
+$('#left').textContent=f(L);$('#left').className='big '+(L<0?'neg':'pos');$('#lsub').textContent=`Take-home ${f(S.pay)} minus bills ${f(T)}`;$('#txt').textContent=S.tax?`Estimated taxes: ${f(S.gross-S.pay)} a month. Take-home pay: ${f(S.pay)}. This is a rough estimate, so check a pay stub for your exact rate.`:'Enter a percentage to see your estimated take-home pay.';
+const [fc,say]=face(r);$('#face').innerHTML=fc;$('#say').textContent=say;$('#pin').style.left=`calc(${hp}% - 3px)`;$('#hp').textContent=hp+'%';
+document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.view));
+$('#vis').innerHTML={bar:vBar,donut:vDonut,scale:vScale,jar:vJar}[S.view]();
+$('#legend').innerHTML=S.bills.map((b,i)=>`<div><i style="background:${C[i%8]}"></i><span>${esc(b.n)||'Bill'}</span><span>${f(b.a)}</span><span>${S.pay?Math.round(b.a/S.pay*100):0}%</span></div>`).join('')+`<div><i style="background:var(--line)"></i><span>${L<0?'Over budget':'Left over'}</span><span class="${L<0?'neg':'pos'}">${f(L)}</span><span></span></div>`;
+$('#daily').textContent=L>0?f(L/left)+' a day':'$0 a day';$('#daily').className='daily '+(L>0?'pos':'neg');$('#dsub').textContent=L>0?`${f(L)} spread over the ${left} day${left>1?'s':''} left this month.`:`Bills are ${f(-L)} over pay. Trim a bill or raise pay to get a daily allowance.`;
+const fd=new Date(y,mo,1).getDay(),by={};S.bills.forEach((b,i)=>{const d=cl(Math.round(b.d)||1,1,dim);(by[d]=by[d]||[]).push([b,i])});
+$('#cmon').textContent=now.toLocaleString('en-US',{month:'long',year:'numeric'})+'. Highlighted days have a bill due.';
+let h='SMTWTFS'.split('').map(c=>`<b>${c}</b>`).join('')+'<span></span>'.repeat(fd);
+for(let d=1;d<=dim;d++){const e=by[d]||[],sum=e.reduce((s,x)=>s+(+x[0].a||0),0);h+=`<div class="day${d==now.getDate()?' t':''}${e.length?' has':''}"><b style="text-align:left;color:var(--ink)">${d}</b>${e.length?`<div class="dots">${e.map(x=>`<i style="background:${C[x[1]%8]}"></i>`).join('')}</div>${f(sum)}`:''}</div>`}
+$('#cal').innerHTML=h;
+const g=S.goal,pr=g.t?cl(g.s/g.t*100,0,100):0,need=Math.max(0,g.t-g.s);$('#gp').style.width=pr+'%';
+$('#gtxt').textContent=need==0?`${g.n||'Goal'} reached!`:`${Math.round(pr)}% of ${f(g.t)}. `+(L>0?`At ${f(L)} a month, you’ll get there in ${Math.ceil(need/L)} month${Math.ceil(need/L)>1?'s':''}.`:'Free up some leftover to start moving toward it.');
+try{localStorage.setItem('penny',JSON.stringify(S))}catch(e){}}
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.k){S.bills[t.dataset.i][t.dataset.k]=t.dataset.k=='n'?t.value:+t.value||0}else if(t.id=='pay')S.gross=+t.value||0;else if(t.id=='tax')S.tax=cl(+t.value||0,0,60);else if(t.dataset.g)S.goal[t.dataset.g]=t.dataset.g=='n'?t.value:+t.value||0;else return;update()});
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;if(t.dataset.v)S.view=t.dataset.v;else if(t.dataset.del){S.bills.splice(+t.dataset.del,1);rows()}else if(t.id=='add'){S.bills.push({n:'New bill',a:0,d:1});rows()}else if(t.id=='sv'){if(L>0){S.goal.s+=Math.round(L);$('#gs').value=S.goal.s}}else return;update()});
+$('#pay').value=S.gross;$('#tax').value=S.tax||'';$('#gn').value=S.goal.n;$('#gt').value=S.goal.t;$('#gs').value=S.goal.s;rows();update();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script></body></html>

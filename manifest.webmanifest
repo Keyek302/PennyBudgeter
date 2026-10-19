@@ -1,0 +1,15 @@
+{
+  "name": "Penny Budgeter",
+  "short_name": "Penny",
+  "description": "See your pay, bills, and leftover money at a glance.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d3b33",
+  "theme_color": "#17896a",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
